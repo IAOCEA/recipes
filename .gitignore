@@ -1,20 +1,25 @@
 # editor files
 *~
-\#*\#
+\#*#
+.*.swp
 
 # python bytecode
-*.py[co]
-__pycache__/
+*.py[cod]
+__pycache__/*
 
 # install artifacts
 /build
 /dist
 /*.egg-info
 
-# tools
-.ipynb_checkpoints/
-.hypothesis/
-.pytest_cache
+# tool caches
+.pytest_cache/*
+.ruff_cache/*
+.prettier_cache/*
+.mypy_cache/*
+.hypothesis/*
+.ipynb_checkpoint/*
+.virtual_documents/*
 .coverage
 .coverage.*
 .cache
