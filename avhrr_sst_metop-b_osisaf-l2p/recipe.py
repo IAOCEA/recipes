@@ -7,6 +7,7 @@ recipe for creating a stac collection for the avhrr metop-b dataset
 import pathlib
 
 import apache_beam as beam
+import numpy as np
 import pandas as pd
 import pystac
 import rich_click as click
@@ -88,15 +89,54 @@ def create_collections(pipeline, database_config, collections_path):
 
 
 def create_items(pipeline, data_root, database_config, storage_kwargs):
-    dates = pd.date_range("2016-01-19T08:07:03", "2024-12-31T23:59:59", freq="3min")
+    # full range:
+    # dates = pd.date_range("2016-01-19T08:07:03", "2024-12-31T23:59:59", freq="3min")
+    # subset:
+    missing = np.array(
+        [
+            "2024-05-01 11:58:03",
+            "2024-05-08 17:58:03",
+            "2024-05-08 23:10:03",
+            "2024-05-10 00:13:03",
+            "2024-05-10 20:07:03",
+            "2024-05-11 03:25:03",
+            "2024-05-11 12:34:03",
+            "2024-05-12 01:37:03",
+            "2024-05-12 04:46:03",
+            "2024-05-12 16:43:03",
+            "2024-05-13 07:49:03",
+            "2024-05-14 01:58:03",
+            "2024-05-16 18:28:03",
+            "2024-05-16 18:37:03",
+            "2024-05-16 18:40:03",
+            "2024-05-16 18:43:03",
+            "2024-05-16 18:46:03",
+            "2024-05-16 18:49:03",
+            "2024-05-17 01:10:03",
+            "2024-05-17 16:19:03",
+            "2024-05-24 05:07:03",
+            "2024-05-26 18:40:03",
+            "2024-05-27 13:07:03",
+            "2024-05-27 13:10:03",
+            "2024-05-27 13:13:03",
+            "2024-05-27 13:16:03",
+            "2024-05-29 14:04:03",
+            "2024-05-30 19:22:03",
+        ],
+        dtype="datetime64",
+    )
+    dates = pd.date_range(
+        "2024-05-01T00:01:03", "2024-05-31T23:59:59", freq="3min"
+    ).drop(labels=missing)
 
     pattern = FilePattern(curry(generate_url, data_root), dates, file_type="netcdf4")
-
     return (
         pipeline
         | beam.Create(pattern.items())
         | OpenURLWithFSSpec(open_kwargs=storage_kwargs)
-        | OpenWithXarray(file_type=pattern.file_type)
+        | OpenWithXarray(
+            xarray_open_kwargs={"decode_timedelta": True}, file_type=pattern.file_type
+        )
         | CreateStacItem(
             template=generate_stac_item,
             postprocess=postprocess_item,
