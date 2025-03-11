@@ -1,0 +1,42 @@
+services:
+  app:
+    container_name: ifremer-stac-recipes-api
+    image: 41fbe911b0d4fb138c5170f785164dadced26e48ef1e03c39756628f2c71b0f6
+    environment:
+      - APP_HOST=0.0.0.0
+      - APP_PORT=8080
+      - RELOAD=true
+      - ENVIRONMENT=local
+      - POSTGRES_USER=pgstac
+      - POSTGRES_PASS=pgstac
+      - POSTGRES_DBNAME=postgis
+      - POSTGRES_HOST_READER=database
+      - POSTGRES_HOST_WRITER=database
+      - POSTGRES_PORT=5432
+      - WEB_CONCURRENCY=10
+      - VSI_CACHE=TRUE
+      - GDAL_HTTP_MERGE_CONSECUTIVE_RANGES=YES
+      - GDAL_DISABLE_READDIR_ON_OPEN=EMPTY_DIR
+      - DB_MIN_CONN_SIZE=1
+      - DB_MAX_CONN_SIZE=1
+      - USE_API_HYDRATE=${USE_API_HYDRATE:-false}
+    ports:
+      - "9588:8080"
+    volumes:
+      - .:/app
+    depends_on:
+      - database
+
+  database:
+    container_name: ifremer-stac-recipes-db
+    image: ghcr.io/stac-utils/pgstac:v0.9.2
+    environment:
+      - POSTGRES_USER=pgstac
+      - POSTGRES_PASSWORD=pgstac
+      - POSTGRES_DB=postgis
+      - PGUSER=pgstac
+      - PGPASSWORD=pgstac
+      - PGDATABASE=postgis
+    ports:
+      - "5439:5432"
+    command: postgres -N 500
