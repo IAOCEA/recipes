@@ -1,0 +1,24 @@
+- id: "INSITU_GLO_PHYBGCWAV_DISCRETE_MYNRT_013_030"
+  description: >-
+    Global Ocean - near real-time (NRT) in situ quality controlled observations, hourly updated and distributed by INSTAC within 24-48 hours from acquisition in average. Data are collected mainly through global networks (Argo, OceanSites, GOSUD, EGO) and through the GTS
+  extent:
+    spatial: "global"
+    temporal: "2020-01-01/"
+  title: >-
+    Global Ocean - In Situ Observation Copernicus – Bottles
+  license: "other"
+  keywords:
+    - "Oceans"
+    - "In Situ"
+  providers:
+    - name: "CMEMS"
+      roles: ["licensor"]
+      url: "https://marineinsitu.eu"
+    - name: "Ifremer"
+      roles: ["processor", "host"]
+  links:
+    - rel: "license"
+      href: "https://marine.copernicus.eu/user-corner/service-commitments-and-licence"
+    - rel: "cite-as"
+      href: "https://doi.org/10.48670/moi-00036"
+  assets: {}
