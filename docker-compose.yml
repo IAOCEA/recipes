@@ -39,4 +39,6 @@ services:
       - PGDATABASE=postgis
     ports:
       - "5439:5432"
+    volumes:
+      - postgres-data:/var/lib/postgresql/data
     command: postgres -N 500
