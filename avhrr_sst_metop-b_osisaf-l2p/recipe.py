@@ -1,7 +1,5 @@
 """
 recipe for creating a stac collection for the avhrr metop-b dataset
-
-
 """
 
 import pathlib
