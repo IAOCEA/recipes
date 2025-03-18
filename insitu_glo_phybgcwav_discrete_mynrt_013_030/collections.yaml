@@ -1,11 +1,377 @@
-- id: "INSITU_GLO_PHYBGCWAV_DISCRETE_MYNRT_013_030"
+- id: "INSITU_GLO_PHYBGCWAV_DISCRETE_MYNRT_013_030-BO"
   description: >-
     Global Ocean - near real-time (NRT) in situ quality controlled observations, hourly updated and distributed by INSTAC within 24-48 hours from acquisition in average. Data are collected mainly through global networks (Argo, OceanSites, GOSUD, EGO) and through the GTS
+
+    (Bottles description)
   extent:
     spatial: "global"
     temporal: "2020-01-01/"
   title: >-
     Global Ocean - In Situ Observation Copernicus – Bottles
+  license: "other"
+  keywords:
+    - "Oceans"
+    - "In Situ"
+  providers:
+    - name: "CMEMS"
+      roles: ["licensor"]
+      url: "https://marineinsitu.eu"
+    - name: "Ifremer"
+      roles: ["processor", "host"]
+  links:
+    - rel: "license"
+      href: "https://marine.copernicus.eu/user-corner/service-commitments-and-licence"
+    - rel: "cite-as"
+      href: "https://doi.org/10.48670/moi-00036"
+  assets: {}
+- id: "INSITU_GLO_PHYBGCWAV_DISCRETE_MYNRT_013_030-CT"
+  description: >-
+    Global Ocean - near real-time (NRT) in situ quality controlled observations, hourly updated and distributed by INSTAC within 24-48 hours from acquisition in average. Data are collected mainly through global networks (Argo, OceanSites, GOSUD, EGO) and through the GTS
+
+    (Conductivity, Temperature, and Depth sensor description)
+  extent:
+    spatial: "global"
+    temporal: "2020-01-01/"
+  title: >-
+    Global Ocean - In Situ Observation Copernicus – CTD
+  license: "other"
+  keywords:
+    - "Oceans"
+    - "In Situ"
+  providers:
+    - name: "CMEMS"
+      roles: ["licensor"]
+      url: "https://marineinsitu.eu"
+    - name: "Ifremer"
+      roles: ["processor", "host"]
+  links:
+    - rel: "license"
+      href: "https://marine.copernicus.eu/user-corner/service-commitments-and-licence"
+    - rel: "cite-as"
+      href: "https://doi.org/10.48670/moi-00036"
+  assets: {}
+- id: "INSITU_GLO_PHYBGCWAV_DISCRETE_MYNRT_013_030-DB"
+  description: >-
+    Global Ocean - near real-time (NRT) in situ quality controlled observations, hourly updated and distributed by INSTAC within 24-48 hours from acquisition in average. Data are collected mainly through global networks (Argo, OceanSites, GOSUD, EGO) and through the GTS
+
+    (Drifting Buoy description)
+  extent:
+    spatial: "global"
+    temporal: "2020-01-01/"
+  title: >-
+    Global Ocean - In Situ Observation Copernicus – Drifting Buoys
+  license: "other"
+  keywords:
+    - "Oceans"
+    - "In Situ"
+  providers:
+    - name: "CMEMS"
+      roles: ["licensor"]
+      url: "https://marineinsitu.eu"
+    - name: "Ifremer"
+      roles: ["processor", "host"]
+  links:
+    - rel: "license"
+      href: "https://marine.copernicus.eu/user-corner/service-commitments-and-licence"
+    - rel: "cite-as"
+      href: "https://doi.org/10.48670/moi-00036"
+  assets: {}
+- id: "INSITU_GLO_PHYBGCWAV_DISCRETE_MYNRT_013_030-FB"
+  description: >-
+    Global Ocean - near real-time (NRT) in situ quality controlled observations, hourly updated and distributed by INSTAC within 24-48 hours from acquisition in average. Data are collected mainly through global networks (Argo, OceanSites, GOSUD, EGO) and through the GTS
+
+    (Ferry box description)
+  extent:
+    spatial: "global"
+    temporal: "2020-01-01/"
+  title: >-
+    Global Ocean - In Situ Observation Copernicus – Ferry boxes
+  license: "other"
+  keywords:
+    - "Oceans"
+    - "In Situ"
+  providers:
+    - name: "CMEMS"
+      roles: ["licensor"]
+      url: "https://marineinsitu.eu"
+    - name: "Ifremer"
+      roles: ["processor", "host"]
+  links:
+    - rel: "license"
+      href: "https://marine.copernicus.eu/user-corner/service-commitments-and-licence"
+    - rel: "cite-as"
+      href: "https://doi.org/10.48670/moi-00036"
+  assets: {}
+- id: "INSITU_GLO_PHYBGCWAV_DISCRETE_MYNRT_013_030-GL"
+  description: >-
+    Global Ocean - near real-time (NRT) in situ quality controlled observations, hourly updated and distributed by INSTAC within 24-48 hours from acquisition in average. Data are collected mainly through global networks (Argo, OceanSites, GOSUD, EGO) and through the GTS
+
+    (Glider description)
+  extent:
+    spatial: "global"
+    temporal: "2020-01-01/"
+  title: >-
+    Global Ocean - In Situ Observation Copernicus – Gliders
+  license: "other"
+  keywords:
+    - "Oceans"
+    - "In Situ"
+  providers:
+    - name: "CMEMS"
+      roles: ["licensor"]
+      url: "https://marineinsitu.eu"
+    - name: "Ifremer"
+      roles: ["processor", "host"]
+  links:
+    - rel: "license"
+      href: "https://marine.copernicus.eu/user-corner/service-commitments-and-licence"
+    - rel: "cite-as"
+      href: "https://doi.org/10.48670/moi-00036"
+  assets: {}
+- id: "INSITU_GLO_PHYBGCWAV_DISCRETE_MYNRT_013_030-ML"
+  description: >-
+    Global Ocean - near real-time (NRT) in situ quality controlled observations, hourly updated and distributed by INSTAC within 24-48 hours from acquisition in average. Data are collected mainly through global networks (Argo, OceanSites, GOSUD, EGO) and through the GTS
+
+    (Mini Logger description)
+  extent:
+    spatial: "global"
+    temporal: "2020-01-01/"
+  title: >-
+    Global Ocean - In Situ Observation Copernicus – Mini Loggers
+  license: "other"
+  keywords:
+    - "Oceans"
+    - "In Situ"
+  providers:
+    - name: "CMEMS"
+      roles: ["licensor"]
+      url: "https://marineinsitu.eu"
+    - name: "Ifremer"
+      roles: ["processor", "host"]
+  links:
+    - rel: "license"
+      href: "https://marine.copernicus.eu/user-corner/service-commitments-and-licence"
+    - rel: "cite-as"
+      href: "https://doi.org/10.48670/moi-00036"
+  assets: {}
+- id: "INSITU_GLO_PHYBGCWAV_DISCRETE_MYNRT_013_030-MO"
+  description: >-
+    Global Ocean - near real-time (NRT) in situ quality controlled observations, hourly updated and distributed by INSTAC within 24-48 hours from acquisition in average. Data are collected mainly through global networks (Argo, OceanSites, GOSUD, EGO) and through the GTS
+
+    (Mooring description)
+  extent:
+    spatial: "global"
+    temporal: "2020-01-01/"
+  title: >-
+    Global Ocean - In Situ Observation Copernicus – Moorings
+  license: "other"
+  keywords:
+    - "Oceans"
+    - "In Situ"
+  providers:
+    - name: "CMEMS"
+      roles: ["licensor"]
+      url: "https://marineinsitu.eu"
+    - name: "Ifremer"
+      roles: ["processor", "host"]
+  links:
+    - rel: "license"
+      href: "https://marine.copernicus.eu/user-corner/service-commitments-and-licence"
+    - rel: "cite-as"
+      href: "https://doi.org/10.48670/moi-00036"
+  assets: {}
+- id: "INSITU_GLO_PHYBGCWAV_DISCRETE_MYNRT_013_030-PF"
+  description: >-
+    Global Ocean - near real-time (NRT) in situ quality controlled observations, hourly updated and distributed by INSTAC within 24-48 hours from acquisition in average. Data are collected mainly through global networks (Argo, OceanSites, GOSUD, EGO) and through the GTS
+
+    (Profiler description)
+  extent:
+    spatial: "global"
+    temporal: "2020-01-01/"
+  title: >-
+    Global Ocean - In Situ Observation Copernicus – Profilers
+  license: "other"
+  keywords:
+    - "Oceans"
+    - "In Situ"
+  providers:
+    - name: "CMEMS"
+      roles: ["licensor"]
+      url: "https://marineinsitu.eu"
+    - name: "Ifremer"
+      roles: ["processor", "host"]
+  links:
+    - rel: "license"
+      href: "https://marine.copernicus.eu/user-corner/service-commitments-and-licence"
+    - rel: "cite-as"
+      href: "https://doi.org/10.48670/moi-00036"
+  assets: {}
+- id: "INSITU_GLO_PHYBGCWAV_DISCRETE_MYNRT_013_030-RF"
+  description: >-
+    Global Ocean - near real-time (NRT) in situ quality controlled observations, hourly updated and distributed by INSTAC within 24-48 hours from acquisition in average. Data are collected mainly through global networks (Argo, OceanSites, GOSUD, EGO) and through the GTS
+
+    (River Flow description)
+  extent:
+    spatial: "global"
+    temporal: "2020-01-01/"
+  title: >-
+    Global Ocean - In Situ Observation Copernicus – River Flows
+  license: "other"
+  keywords:
+    - "Oceans"
+    - "In Situ"
+  providers:
+    - name: "CMEMS"
+      roles: ["licensor"]
+      url: "https://marineinsitu.eu"
+    - name: "Ifremer"
+      roles: ["processor", "host"]
+  links:
+    - rel: "license"
+      href: "https://marine.copernicus.eu/user-corner/service-commitments-and-licence"
+    - rel: "cite-as"
+      href: "https://doi.org/10.48670/moi-00036"
+  assets: {}
+- id: "INSITU_GLO_PHYBGCWAV_DISCRETE_MYNRT_013_030-SD"
+  description: >-
+    Global Ocean - near real-time (NRT) in situ quality controlled observations, hourly updated and distributed by INSTAC within 24-48 hours from acquisition in average. Data are collected mainly through global networks (Argo, OceanSites, GOSUD, EGO) and through the GTS
+
+    (Sail Drone description)
+  extent:
+    spatial: "global"
+    temporal: "2020-01-01/"
+  title: >-
+    Global Ocean - In Situ Observation Copernicus – Sail Drones
+  license: "other"
+  keywords:
+    - "Oceans"
+    - "In Situ"
+  providers:
+    - name: "CMEMS"
+      roles: ["licensor"]
+      url: "https://marineinsitu.eu"
+    - name: "Ifremer"
+      roles: ["processor", "host"]
+  links:
+    - rel: "license"
+      href: "https://marine.copernicus.eu/user-corner/service-commitments-and-licence"
+    - rel: "cite-as"
+      href: "https://doi.org/10.48670/moi-00036"
+  assets: {}
+- id: "INSITU_GLO_PHYBGCWAV_DISCRETE_MYNRT_013_030-SM"
+  description: >-
+    Global Ocean - near real-time (NRT) in situ quality controlled observations, hourly updated and distributed by INSTAC within 24-48 hours from acquisition in average. Data are collected mainly through global networks (Argo, OceanSites, GOSUD, EGO) and through the GTS
+
+    (Sea Mammal description)
+  extent:
+    spatial: "global"
+    temporal: "2020-01-01/"
+  title: >-
+    Global Ocean - In Situ Observation Copernicus – Sea Mammals
+  license: "other"
+  keywords:
+    - "Oceans"
+    - "In Situ"
+  providers:
+    - name: "CMEMS"
+      roles: ["licensor"]
+      url: "https://marineinsitu.eu"
+    - name: "Ifremer"
+      roles: ["processor", "host"]
+  links:
+    - rel: "license"
+      href: "https://marine.copernicus.eu/user-corner/service-commitments-and-licence"
+    - rel: "cite-as"
+      href: "https://doi.org/10.48670/moi-00036"
+  assets: {}
+- id: "INSITU_GLO_PHYBGCWAV_DISCRETE_MYNRT_013_030-TG"
+  description: >-
+    Global Ocean - near real-time (NRT) in situ quality controlled observations, hourly updated and distributed by INSTAC within 24-48 hours from acquisition in average. Data are collected mainly through global networks (Argo, OceanSites, GOSUD, EGO) and through the GTS
+
+    (Tide gauge description)
+  extent:
+    spatial: "global"
+    temporal: "2020-01-01/"
+  title: >-
+    Global Ocean - In Situ Observation Copernicus – Tide gauges
+  license: "other"
+  keywords:
+    - "Oceans"
+    - "In Situ"
+  providers:
+    - name: "CMEMS"
+      roles: ["licensor"]
+      url: "https://marineinsitu.eu"
+    - name: "Ifremer"
+      roles: ["processor", "host"]
+  links:
+    - rel: "license"
+      href: "https://marine.copernicus.eu/user-corner/service-commitments-and-licence"
+    - rel: "cite-as"
+      href: "https://doi.org/10.48670/moi-00036"
+  assets: {}
+- id: "INSITU_GLO_PHYBGCWAV_DISCRETE_MYNRT_013_030-TS"
+  description: >-
+    Global Ocean - near real-time (NRT) in situ quality controlled observations, hourly updated and distributed by INSTAC within 24-48 hours from acquisition in average. Data are collected mainly through global networks (Argo, OceanSites, GOSUD, EGO) and through the GTS
+
+    (Thermo-salinometer description)
+  extent:
+    spatial: "global"
+    temporal: "2020-01-01/"
+  title: >-
+    Global Ocean - In Situ Observation Copernicus – Thermo-salinometers
+  license: "other"
+  keywords:
+    - "Oceans"
+    - "In Situ"
+  providers:
+    - name: "CMEMS"
+      roles: ["licensor"]
+      url: "https://marineinsitu.eu"
+    - name: "Ifremer"
+      roles: ["processor", "host"]
+  links:
+    - rel: "license"
+      href: "https://marine.copernicus.eu/user-corner/service-commitments-and-licence"
+    - rel: "cite-as"
+      href: "https://doi.org/10.48670/moi-00036"
+  assets: {}
+- id: "INSITU_GLO_PHYBGCWAV_DISCRETE_MYNRT_013_030-TX"
+  description: >-
+    Global Ocean - near real-time (NRT) in situ quality controlled observations, hourly updated and distributed by INSTAC within 24-48 hours from acquisition in average. Data are collected mainly through global networks (Argo, OceanSites, GOSUD, EGO) and through the GTS
+
+    (Thermistor Chain description)
+  extent:
+    spatial: "global"
+    temporal: "2020-01-01/"
+  title: >-
+    Global Ocean - In Situ Observation Copernicus – Thermistor Chains
+  license: "other"
+  keywords:
+    - "Oceans"
+    - "In Situ"
+  providers:
+    - name: "CMEMS"
+      roles: ["licensor"]
+      url: "https://marineinsitu.eu"
+    - name: "Ifremer"
+      roles: ["processor", "host"]
+  links:
+    - rel: "license"
+      href: "https://marine.copernicus.eu/user-corner/service-commitments-and-licence"
+    - rel: "cite-as"
+      href: "https://doi.org/10.48670/moi-00036"
+  assets: {}
+- id: "INSITU_GLO_PHYBGCWAV_DISCRETE_MYNRT_013_030-XB"
+  description: >-
+    Global Ocean - near real-time (NRT) in situ quality controlled observations, hourly updated and distributed by INSTAC within 24-48 hours from acquisition in average. Data are collected mainly through global networks (Argo, OceanSites, GOSUD, EGO) and through the GTS
+
+    (Expendable Bathythermograph description)
+  extent:
+    spatial: "global"
+    temporal: "2020-01-01/"
+  title: >-
+    Global Ocean - In Situ Observation Copernicus – Expendable Bathythermographs
   license: "other"
   keywords:
     - "Oceans"
