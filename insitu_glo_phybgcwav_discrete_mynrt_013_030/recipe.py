@@ -1,243 +1,207 @@
-"""recipe for creating a STAC catalog for the Copernicus Marine Service's In-situ Ocean TAC
+"""
+recipe for creating a stac collection for the cmems marine insitu tac
 
-Data portal at: https://marineinsitu.eu
-Dashboard at: https://marineinsitu.eu/dashboard/
-Data server: https://data-marineinsitu.ifremer.fr
+https://doi.org/10.48670/moi-00036
 """
 
+import hashlib
 import pathlib
-import re
-from dataclasses import dataclass, field
 
 import apache_beam as beam
 import fsspec
+import pandas as pd
 import pystac
-
-# from apache_beam.options.pipeline_options import PipelineOptions
-# from apache_beam.runners.dask.dask_runner import DaskRunner
+import rich_click as click
+import yaml
+from beam_pyspark_runner.pyspark_runner import PySparkRunner
 from pangeo_forge_recipes.transforms import OpenURLWithFSSpec, OpenWithXarray
 from rich.console import Console
 from stac_insitu.geometry import extract_geometry
-from stac_insitu.io import glob_files
-from tlz.functoolz import curry
+from tlz.itertoolz import concat
 
 from stac_recipes.patterns import FilePattern
-from stac_recipes.transforms import (
-    CreateCatalog,
-    CreateCollection,
-    CreateStacItem,
-    ToStaticJson,
-)
+from stac_recipes.readers import open_collections
+from stac_recipes.transforms import CreateStacItem, ToPgStac
 
-console = Console()
-
-category_names = {
-    "bo": "bottles",
-    "ct": "conductivity, temperature, and depth sensors (CTD)",
-    "db": "drifting buoys",
-    "fb": "ferrybox",
-    "gl": "gliders",
-    "hf": "high frequency radars",
-    "ml": "mini loggers",
-    "mo": "moorings",
-    "pf": "profilers",
-    "rf": "river flows",
-    "sd": "saildrones",
-    "sm": "sea mammals",
-    "tg": "tide gauges",
-    "ts": "thermosalinometer",
-    "tx": "thermistor chains",
-    "xb": "expendable bathythermographs (XBT)",
-}
-
-filename_re = re.compile(
-    r"^(?P<region>[A-Z]+)_(?P<data_type>[A-Z]+)_(?P<category>[A-Z]+)_(?P<platform>.{2,})_(?P<time>[0-9])"
-)
+collection_root_id = "INSITU_GLO_PHYBGCWAV_DISCRETE_MYNRT_013_030"
 
 
-def tokenize_filename(url):
-    stem = url.rsplit("/", maxsplit=1)[-1].removesuffix(".nc")
+def cached_glob(fs, glob: str, *, cache_root: pathlib.Path, cache=True):
+    m = hashlib.sha256()
+    m.update(glob.encode())
+    hash_ = m.hexdigest()
 
-    match = filename_re.match(stem)
-    if match is None:
-        raise ValueError(f"unexpected filename structure: {url}")
+    cache_path = cache_root.joinpath(hash_).with_suffix(".parquet")
+    if cache_path.exists() and cache:
+        df = pd.read_parquet(str(cache_path))
+        return df["urls"].to_list()
 
-    return match.groupdict()
+    urls = sorted(fs.glob(glob))
+    if cache:
+        df = pd.DataFrame({"urls": urls})
+        df.to_parquet(cache_path)
+
+    return urls
 
 
-def generate_item_template(ds):
+def reencode_surrogates(ds):
+    def fix_dict(attrs):
+        return {name: fix_value(value) for name, value in attrs.items()}
+
+    def fix_value(value):
+        if not isinstance(value, str):
+            return value
+        return value.encode("utf-8", "surrogateescape").decode("utf-8")
+
+    ds_ = ds.copy()
+
+    for k, v in ds_.variables.items():
+        v.attrs = fix_dict(v.attrs)
+    ds_.attrs = fix_dict(ds_.attrs)
+
+    return ds_
+
+
+def normalize_datetime(string):
+    timestamp = pd.to_datetime(string)
+
+    return timestamp.isoformat()
+
+
+def generate_stac_item(ds):
     url = ds.encoding["source"]
-    parts = tokenize_filename(url)
-    item_id = "-".join(parts.values())
 
-    bbox = [
-        float(ds.attrs["geospatial_lon_min"]),
-        float(ds.attrs["geospatial_lat_min"]),
-        float(ds.attrs["geospatial_lon_max"]),
-        float(ds.attrs["geospatial_lat_max"]),
+    category = url.rsplit("/", maxsplit=3)[1]
+
+    collection_id = f"{collection_root_id}-{category}"
+    item_id = ds.attrs["id"]
+
+    bbox_strings = [
+        ds.attrs["geospatial_lon_min"],
+        ds.attrs["geospatial_lat_min"],
+        ds.attrs["geospatial_lon_max"],
+        ds.attrs["geospatial_lat_max"],
     ]
+
+    try:
+        bbox = list(map(float, bbox_strings))
+    except ValueError as e:
+        raise ValueError(ds.attrs, bbox_strings) from e
     geometry, time = extract_geometry(
-        ds, tolerance=0.001, x="LONGITUDE", y="LATITUDE", time="TIME"
+        ds.squeeze(), tolerance=0.001, x="LONGITUDE", y="LATITUDE", time="TIME"
     )
 
     properties = {
         "start_datetime": None,
         "end_datetime": None,
-        "collection": parts["category"],
+        "collection": collection_id,
     }
     if time is not None:
         properties["datetimes"] = time
+
+    stac_extensions = [
+        "https://stac-extensions.github.io/moving-features/v1.0.0/schema.json",
+    ]
 
     item = pystac.Item(
         item_id,
         geometry=geometry,
         bbox=bbox,
         datetime=None,
-        properties=properties | {"filename_parts": parts, "attrs": ds.attrs},
+        properties=properties,
+        stac_extensions=stac_extensions,
     )
-
-    extra_fields = {"xarray:open_kwargs": {"engine": "h5netcdf"}}
     item.add_asset(
-        "https",
-        pystac.Asset(
-            href=url, media_type="application/netcdf", extra_fields=extra_fields
-        ),
+        "public",
+        pystac.Asset(href=url, media_type="application/netcdf"),
     )
+    item.links.append(pystac.Link(rel="collection", target=collection_id))
+    item.collection_id = collection_id
 
     return item
 
 
-def postprocess_item(item, ds):
-    item.extra_fields |= ds.attrs
-
-    return item
-
-
-def generate_collection(col, item):
-    parts = item.properties.pop("filename_parts")
-    attrs = item.properties.pop("attrs")
-
-    id = parts["category"]
-
-    col = pystac.Collection(
-        id,
-        title=f"{category_names[parts['category'].lower()]}",
-        description="",
-        extent=pystac.Extent.from_dict(
-            {
-                "spatial": {"bbox": [[-180, -90, 180, 90]]},
-                "temporal": {"interval": [["1900-01-01", "2100-01-01"]]},
-            }
-        ),
-        providers=[],
-        keywords=[],
-        extra_fields={},
-        license=attrs["license"],
-    )
-
-    return col
-
-
-def postprocess_collection(col):
-    return col
-
-
-def generate_root_catalog(collections):
-    return pystac.Catalog(
-        id="cmems-ocean-insitu-tac",
-        description="Copernicus Marine Service – In-situ Ocean TAC",
+def create_collections(pipeline, database_config, collections_path):
+    return (
+        pipeline
+        | beam.Create(open_collections(collections_path))
+        | ToPgStac(database_config, type="collection")
     )
 
 
-def intact_sensor(item: tuple[str, str], broken: set[str]):
-    _, url = item
-
-    _, name = url.rsplit("/", maxsplit=1)
-
-    return not any(pattern in name for pattern in broken)
-
-
-@dataclass
-class RemoveBrokenSensors(beam.PTransform):
-    broken: set[str]
-
-    def expand(self, pcoll):
-        return pcoll | "Filter broken sensors" >> beam.Filter(
-            curry(intact_sensor, broken=self.broken)
+def create_items(
+    pipeline, categories, data_root, cache_root, database_config, storage_kwargs
+):
+    fs = fsspec.filesystem("http", **storage_kwargs)
+    urls = list(
+        concat(
+            [
+                cached_glob(
+                    fs,
+                    f"{data_root}/{category}/202205/*.nc",
+                    cache=True,
+                    cache_root=cache_root,
+                )
+                for category in categories
+            ]
         )
+    )
+    pattern = FilePattern.from_sequence(urls, file_type="netcdf4")
 
-
-def select_categories(item: tuple[str, str], select: set[str], drop: set[str]):
-    _, url = item
-
-    category = url.rsplit("/", maxsplit=3)[1]
-
-    return category in select and category not in drop
-
-
-@dataclass
-class SelectCategories(beam.PTransform):
-    select: set[str]
-    drop: set[str] = field(default_factory=set)
-
-    def expand(self, pcoll):
-        return pcoll | "Filter categories" >> beam.Filter(
-            curry(select_categories, select=self.select, drop=self.drop)
+    return (
+        pipeline
+        | beam.Create(pattern.items())
+        | OpenURLWithFSSpec(open_kwargs=storage_kwargs)
+        | OpenWithXarray(
+            xarray_open_kwargs={"decode_timedelta": True}, file_type=pattern.file_type
         )
-
-
-fs = fsspec.filesystem("http")
-
-console.print(
-    "[bold blue]creating a STAC catalog for the CMEMS marine in-situ ocean TAC[/]"
-)
-
-data_root = "https://data-marineinsitu.ifremer.fr/glo_multiparameter_nrt/monthly"
-# TODO: figure out how to allow customizing this (maybe we can make use of `pangeo-forge-runner`?)
-out_root = pathlib.Path.home() / "work/data/insitu/catalogs/cmems-insitu-tac"
-out_root.mkdir(parents=True, exist_ok=True)
-cache_dir = out_root / "cache/urls"
-cache_dir.mkdir(exist_ok=True, parents=True)
-
-with console.status("querying file urls"):
-    console.log("file urls: querying the data server")
-    urls = glob_files(fs, f"{data_root}/**/20230[4-5]/*.nc", cache_dir)
-    console.log(f"file urls: found {len(urls)} files")
-
-broken_sensors = {
-    "BO_LYTN",
-}
-
-pattern = FilePattern.from_sequence(urls, file_type="netcdf4")
-console.log("file urls: assembled pattern")
-
-console.log("pipeline: constructing")
-recipe = (
-    beam.Create(pattern.items())
-    | RemoveBrokenSensors(broken=broken_sensors)
-    | SelectCategories(select=["MO", "TG", "BO", "DB", "DC", "TS"])
-    | OpenURLWithFSSpec()
-    | OpenWithXarray(file_type=pattern.file_type)
-    | CreateStacItem(
-        template=generate_item_template,
-        postprocess=postprocess_item,
-        xstac_kwargs={"reference_system": "epsg:4326"},
+        | CreateStacItem(
+            template=generate_stac_item,
+            preprocess=reencode_surrogates,
+            xstac_kwargs={
+                "reference_system": "epsg:4326",
+                "x_dimension": "LONGITUDE",
+                "y_dimension": "LATITUDE",
+            },
+        )
+        | ToPgStac(database_config, type="item")
     )
-    | CreateCollection(
-        template=generate_collection,
-        postprocess=postprocess_collection,
-        spatial_extent="global",
-    )
-    | CreateCatalog(template=generate_root_catalog)
-    | ToStaticJson(
-        href=str(out_root), catalog_type=pystac.CatalogType.RELATIVE_PUBLISHED
-    )
-)
-console.log("pipeline: done constructing")
 
-console.log("pipeline: connecting to runner")
-with beam.Pipeline() as p:
-    console.log("pipeline: starting execution")
-    p | recipe
-    console.log("pipeline: finished execution")
-console.log("pipeline: disconnected")
+
+@click.command()
+@click.argument("config_file", type=click.File(mode="r"))
+def main(config_file):
+    console = Console()
+
+    recipe_root = pathlib.Path(__file__).parent
+    console.log(f"running recipe at {recipe_root}")
+
+    data_root = "https://data-marineinsitu.ifremer.fr/glo_multiparameter_nrt/monthly"
+
+    console.log(f"creating items for data at {data_root}")
+    runtime_config = yaml.safe_load(config_file)
+    database_config = runtime_config["pgstac"]
+    storage_kwargs = runtime_config.get("storage_kwargs", {})
+    cache_root = pathlib.Path(runtime_config["cache_root"])
+
+    collections_path = recipe_root / "collections.yaml"
+
+    categories = [
+        id.rsplit("-", maxsplit=1)[1] for id, _ in open_collections(collections_path)
+    ]
+
+    console.log("creating collections")
+    with beam.Pipeline(runner=PySparkRunner()) as p:
+        create_collections(p, database_config, collections_path)
+    console.log("finished creating collections")
+
+    console.log("creating items")
+    with beam.Pipeline(runner=PySparkRunner()) as p:
+        create_items(
+            p, categories, data_root, cache_root, database_config, storage_kwargs
+        )
+    console.log("finished creating items")
+
+
+if __name__ == "__main__":
+    main()
