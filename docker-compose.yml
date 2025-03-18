@@ -42,3 +42,11 @@ services:
     volumes:
       - postgres-data:/var/lib/postgresql/data
     command: postgres -N 500
+
+volumes:
+  postgres-data:
+    driver: local
+    driver_opts:
+      o: bind
+      type: none
+      device: ./postgres-data/
