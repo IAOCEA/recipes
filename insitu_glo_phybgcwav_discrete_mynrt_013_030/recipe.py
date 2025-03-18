@@ -12,6 +12,7 @@ import fsspec
 import pandas as pd
 import pystac
 import rich_click as click
+import shapely
 import yaml
 from beam_pyspark_runner.pyspark_runner import PySparkRunner
 from pangeo_forge_recipes.transforms import OpenURLWithFSSpec, OpenWithXarray
@@ -99,9 +100,12 @@ def generate_stac_item(ds):
     if time is not None:
         properties["datetimes"] = time
 
-    stac_extensions = [
-        "https://stac-extensions.github.io/moving-features/v1.0.0/schema.json",
-    ]
+    if isinstance(geometry, shapely.LineString) and time is not None:
+        stac_extensions = [
+            # "https://stac-extensions.github.io/moving-features/v1.0.0/schema.json",
+        ]
+    else:
+        stac_extensions = []
 
     item = pystac.Item(
         item_id,
