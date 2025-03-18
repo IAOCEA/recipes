@@ -1,3 +1,4 @@
 pgstac:
   dsn: "postgresql://pgstac:pgstac@localhost:5439/postgis"
   debug: True
+cache_root: "/home/jmagin/work/data/stac/cache"
