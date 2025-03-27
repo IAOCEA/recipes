@@ -1,16 +1,11 @@
-# editor files
-*~
-\#*#
-.*.swp
-
-# python bytecode
+# python artifacts
 *.py[cod]
 __pycache__/*
 
-# install artifacts
-/build
-/dist
-/*.egg-info
+# editor cache files
+*~
+\#*#
+.*.swp
 
 # tool caches
 .pytest_cache/*
@@ -21,6 +16,3 @@ __pycache__/*
 .ipynb_checkpoint/*
 .virtual_documents/*
 .coverage
-.coverage.*
-.cache
-/docs/_build/
